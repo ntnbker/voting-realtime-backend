@@ -56,6 +56,12 @@ function voting(params, callback) {
       console.error(err);
       return callback('Not Found');
     }
+    var isExist = false;
+    round[0].votes.forEach(function(vote) {
+      if (isExist) return;
+      if (vote.name === params.name) isExist = true;
+    })
+    if (isExist) return callback('Account had voted');
     Round.findOneAndUpdate({
       _id: round[0]._id,
     }, {
@@ -77,7 +83,6 @@ exports.voting = function(req, res, next) {
     if (err) {
       return res.status(400).send(err);
     }
-    console.log(votedRound);
     while(listOfResponse.length) {
       let newRes = listOfResponse.pop();
       try {
@@ -98,7 +103,6 @@ exports.getResult = function(req, res, next) {
       return res.status(400).send('Nothing to show');
     }
     round = round[0];
-    console.log(lastTime, round.lastUpdatedTime);
     if (lastTime < round.lastUpdatedTime) {
       return res.status(200).send(round);
     }
