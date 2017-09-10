@@ -47,6 +47,11 @@ var routes = [
     method: 'DELETE',
     middlewares: [inviteeCtrl.deactive],
     noAuth: true
+  },{
+    path: '/invitee/login',
+    method: 'GET',
+    middlewares: [inviteeCtrl.login],
+    noAuth: true
   },
 ]
 

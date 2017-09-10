@@ -60,7 +60,7 @@ function voting(params, callback) {
     var invitee = params.invitee;
     round[0].votes.forEach(function(vote) {
       if (isExist) return;
-      if (vote.name === invitee.name) isExist = true;
+      if (vote.inviteeId === invitee._id) isExist = true;
     })
     if (isExist) return callback('Account had voted');
     Round.findOneAndUpdate({

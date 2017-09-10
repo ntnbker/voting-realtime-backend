@@ -9,22 +9,32 @@ function handleErrorDatabase(err, res) {
 
 exports.registerInvitee = function(req, res, next) {
   var params = Object.assign(req.body, req.params, req.query);
-  Invitee.create(params, function(err, newInvitee) {
-    if (err) {
-      return handleErrorDatabase(err, res);
+  var username = params.username;
+  if (!username) return res.status(400).send('Username Undefined');
+
+  Invitee.findOne({username: username}, function(err, invitee) {
+    if (err || invitee) {
+      return res.status(400).send(err || 'Invitee had exist');
     }
-    return res.status(200).send(newInvitee);
-  });
+
+    Invitee.create(params, function(err, newInvitee) {
+      if (err) {
+        return handleErrorDatabase(err, res);
+      }
+      return res.status(200).send(newInvitee);
+    });
+  })
 }
 
 exports.attachInvitee = function(req, res, next) {
-  var params = Object.assign(req.body, req.query, req.params);
-  var id = params.id;
+  var params     = Object.assign(req.body, req.query, req.params);
+  var conditions = {isActive: true};
+
+  if (params.id)       conditions._id      = params.id;
+  if (params.username) conditions.username = params.username;
+
   Invitee
-    .find({
-      _id: id,
-      isActive: true,
-    })
+    .find(conditions)
     .limit(1)
     .exec(function(err, invitees) {
       if (err) {
@@ -37,6 +47,21 @@ exports.attachInvitee = function(req, res, next) {
       req.body.invitee = invitees[0];
       return next();
     })
+}
+
+exports.login = function(req, res, next) {
+  var params = req.query;
+  var conditions = {isActive: true};
+
+  if (params.id)       conditions._id      = params.id;
+  if (params.username) conditions.username = params.username;
+
+  Invitee.findOne(conditions, function(err, invitee) {
+    if (err || !invitee) {
+      return res.status(400).send(err || 'Invitee don\'t exist');
+    }
+    return res.status(200).send(invitee);
+  })
 }
 
 exports.getListInvitee = function(req, res, next) {

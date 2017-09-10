@@ -1,6 +1,7 @@
 var Schema = __mongodb.Schema;
 
 var schema = new Schema({
+  username: String,
   name: {type: String, default: 'Invitee' + parseInt(Math.random()*1000 + 1)},
   isActive: {type: Boolean, default: true},
   dateCreated: Number,
@@ -8,7 +9,8 @@ var schema = new Schema({
   type: String,
 })
 
-schema.index({hashName: 1}, {name: 'Find Name'});
+schema.index({username: 1}, {name: 'Find username'});
+schema.index({isActive: 1}, {name: 'Find Active'});
 
 schema.pre('save', function(next) {
   var date = new Date().getTime();
