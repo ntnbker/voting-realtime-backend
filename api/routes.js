@@ -2,6 +2,7 @@ var _ = require('lodash');
 var controllerPath = __base + 'controllers/';
 
 var roundCtrl = require(controllerPath + 'round');
+var inviteeCtrl = require(controllerPath + 'invitee');
 var routes = [
   {
     path: '/auth/local',
@@ -23,13 +24,28 @@ var routes = [
   {
     path: '/round/vote',
     method: 'POST',
-    middlewares: [roundCtrl.voting],
+    middlewares: [inviteeCtrl.attachInvitee, roundCtrl.voting],
     noAuth: true
   },
   {
     path: '/round',
     method: 'GET',
     middlewares: [roundCtrl.getResult],
+    noAuth: true
+  },{
+    path: '/invitee',
+    method: 'POST',
+    middlewares: [inviteeCtrl.registerInvitee],
+    noAuth: true
+  },{
+    path: '/invitee',
+    method: 'GET',
+    middlewares: [inviteeCtrl.getListInvitee],
+    noAuth: true
+  },{
+    path: '/invitee',
+    method: 'DELETE',
+    middlewares: [inviteeCtrl.deactive],
     noAuth: true
   },
 ]

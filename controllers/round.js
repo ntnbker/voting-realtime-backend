@@ -57,16 +57,22 @@ function voting(params, callback) {
       return callback('Not Found');
     }
     var isExist = false;
+    var invitee = params.invitee;
     round[0].votes.forEach(function(vote) {
       if (isExist) return;
-      if (vote.name === params.name) isExist = true;
+      if (vote.name === invitee.name) isExist = true;
     })
     if (isExist) return callback('Account had voted');
     Round.findOneAndUpdate({
       _id: round[0]._id,
     }, {
       $push: {
-        votes: params,
+        votes: {
+          name: invitee.name,
+          inviteeId: invitee._id,
+          anwser: params.anwser,
+          votedTime: Date.now(),
+        },
       },
       $set: {
         lastUpdatedTime: Date.now(),
@@ -78,7 +84,7 @@ function voting(params, callback) {
 }
 
 exports.voting = function(req, res, next) {
-  const params = Object.assign(req.params, req.body, req.query, {votedTime: Date.now()});
+  const params = Object.assign(req.params, req.body, req.query);
   voting(params, function(err, votedRound) {
     if (err) {
       return res.status(400).send(err);

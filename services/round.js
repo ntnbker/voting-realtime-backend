@@ -8,7 +8,7 @@ var schema = new Schema({
   information: String,
   votes: [{
     name: String,
-    userId: String,
+    inviteeId: String,
     votedTime: Number,
     anwser: String,
   }],
