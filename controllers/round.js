@@ -83,9 +83,39 @@ function voting(params, callback) {
   });
 }
 
+function reVoting(id, callback) {
+  findLastRound(function(err, round) {
+    if (err || !round || round.length === 0) {
+      console.error(err || 'Not Found');
+      return res.status(400).send(err || 'Round Not Found');
+    }
+
+    var votes = round[0].votes.map(function(vote) {
+      vote.anwser = vote.inviteeId === id ? 'voted' : 'unvoted';
+      return vote;
+    });
+    Round.findOneAndUpdate({
+      _id: round[0]._id,
+    }, {
+      $set: {
+        votes: votes,
+        lastUpdatedTime: Date.now(),
+      }
+    }, {
+      new: true,
+    }, callback)
+  })
+}
+
 exports.voting = function(req, res, next) {
-  const params = Object.assign(req.params, req.body, req.query);
-  voting(params, function(err, votedRound) {
+  var params       = req.vote === true
+                      ? Object.assign(req.params, req.body, req.query)
+                      : req.body.id;
+  var voteFunction = req.vote === true
+                      ? voting
+                      : reVoting;
+
+  voteFunction(params, function(err, votedRound) {
     if (err) {
       return res.status(400).send(err);
     }
@@ -98,7 +128,7 @@ exports.voting = function(req, res, next) {
         console.error(e);
       }
     }
-    return res.status(200).send('Voting Success');
+    return res.status(200).send(votedRound);
   })
 }
 
