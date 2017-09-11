@@ -33,6 +33,9 @@ app.get('/client', function(req, res, next) {
 app.get('/server', function(req, res, next) {
     res.render('server.html');
 });
+app.get('/show', function(req, res, next) {
+    res.render('show.html');
+});
 app.get('/user', function(req, res, next) {
     res.render('user.html');
 });

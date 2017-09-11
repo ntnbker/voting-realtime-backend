@@ -66,8 +66,7 @@
 </style>
 <body>
     <div class="new-round col-md-12 text-center">
-        <input type="text" placeholder="Round name" id="round-name">
-        <button class="btn btn-info" onclick="newRound()">New Round</button>
+
     </div>
     <div id="vote-list" class="col-md-12">
     </div>
@@ -91,6 +90,9 @@
                 success: function(res){
                     window.roundTime = res.lastUpdatedTime;
                     getVoteList();
+                    setTimeout(function() {
+                        window.location.href = "/show";
+                    }, 300);
                 },
                 error: function(e) {
                     console.log(e);
@@ -125,7 +127,7 @@
                             return invitee._id == voteItem.inviteeId;
                         });
                         if (inviteeS) {
-                            $("#vote-list").append('<div class="active vote-item"> '+ '</div>');
+                            $("#vote-list").append('<div class="active vote-item">'+ '</div>');
                         } else {
                             $("#vote-list").append('<div class="vote-item">' + '</div>');
                         }

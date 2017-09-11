@@ -80,7 +80,7 @@
         function deleteUser(id) {
 
             $.ajax({
-                url: window.rootAPI + 'invitee?id=' +id,
+                url: window.rootAPI + 'invitee?_id=' +id,
                 type: 'DELETE',
                 success: function(res) {
                     getUser();
