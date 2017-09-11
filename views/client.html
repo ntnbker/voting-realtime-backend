@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Client</title>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <script type="text/javascript" src="./js/jquery-3.2.1.min.js"></script>
+</head>
+<style>
+    body {
+        margin: auto;
+        overflow: hidden;
+    }
+    .form-username {
+        text-align: center;
+        margin-top: 50px;
+    }
+    .form-username input {
+        padding: 5px;
+    }
+    .button-wrapper {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 100vw;
+        height: 100vh;
+    }
+    .button-click {
+        cursor: pointer;
+        position: relative;
+    }
+    .btn-vote {
+        background-color: red;
+        border-radius: 100%;
+        width: 60px;
+        height: 60px;
+        position: absolute;
+        top: 170px;
+        left: 45px;
+    }
+</style>
+<body>
+    <div class="form-username" >
+        <label for="username">Username</label>
+        <input type="text" placeholder="Username..." id="username"/>
+        <button class="btn btn-info" id="login">Login</button>
+    </div>
+    <div class="button-wrapper">
+        <div class="button-click">
+            <img src="khoa-sol.jpg" />
+            <div class="btn-vote">
+            <div>
+        </div>
+    </div>
+    <script>
+        // var cookie = document.cookie;
+        // var jCookie = {};
+        window.rootID = '';
+        window.rootAPI = 'http://192.168.1.97:9000/';
+        // if (cookie.length > 0) {
+        //     jCookie = JSON.parse( '{' + cookie.replace('=',":") + '}');
+        //     document.getElementById('button-wrapper').style.display = 'block';
+        // }
+        $(document).ready(function() {
+            $(".button-click").click(function() {
+                voting();
+            });
+            $("#login").bind('click', function() {
+                login();
+            });
+        });
+        function login() {
+            var username = $("#username").val();
+            $.ajax({
+                url: window.rootAPI + 'invitee/login?username=' + username,
+                type: 'GET',
+                success: function(res) {
+                    window.rootID = res._id;
+                    $(".button-wrapper").css('display', 'flex');
+                    $(".form-username").hide();
+                },
+                error: function (e) {
+                    login();
+                }
+            });
+        }
+        function voting() {
+            $.ajax({
+                url: window.rootAPI + 'round/vote',
+                type: 'POST',
+                data: {
+                    id: window.rootID,
+                    answer: 1
+                },
+                success: function(res) {
+                    console.log(res)
+                },
+                error: function(e) {
+                    console.log(e);
+
+                }
+            })
+        }
+    </script>
+</body>
+</html>

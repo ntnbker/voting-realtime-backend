@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>User</title>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <script type="text/javascript" src="./js/jquery-3.2.1.min.js"></script>
+</head>
+<style>
+    body {
+        margin: auto;
+        margin-top: 20px;
+    }
+    input {
+        padding: 5px;
+    }
+    .add-user div{
+        margin: 5px 0;
+    }
+    .user-container div{
+        border: 1px solid #ddd;
+    }
+    table {
+        margin: auto;
+        margin-bottom: 50px;
+    }
+
+</style>
+<body>
+    <div class="action">
+
+    </div>
+    <div class="user-container">
+
+    </div>
+    <div class="add-user col-md-12 text-center">
+        <div class="col-md-12">
+            <label for="username" class="col-md-3">Username</label>
+            <input type="text" placeholder="Username..." id="username" class="col-md-8"/>
+        </div>
+        <br />
+        <div class="col-md-12">
+            <label for="name" class="col-md-3">Name</label>
+            <input type="text" placeholder="Name" id="name" class="col-md-8"/>
+        </div>
+
+        <button class="btn btn-info add-user">Add User</button>
+    </div>
+    <script>
+        window.rootAPI = 'http://192.168.1.97:9000/';
+        getUser();
+        $(document).ready(function() {
+            $(".add-user").click(function () {
+                addUser();
+            });
+        })
+        function addUser() {
+            $.ajax({
+                url: window.rootAPI + 'invitee',
+                type: 'POST',
+                data: {
+                    username: $('#username').val(),
+                    name: $("#name").val()
+                },
+                success: function(res) {
+                    $("#username").attr('value', '');
+                    $("#username").val('');
+                    $("#name").attr('value', '');
+                    $("#name").val('');
+                    getUser();
+                },
+                error: function(e) {
+
+                }
+
+
+            });
+        }
+        function deleteUser(id) {
+
+            $.ajax({
+                url: window.rootAPI + 'invitee?id=' +id,
+                type: 'DELETE',
+                success: function(res) {
+                    getUser();
+                }
+            })
+        }
+        function getUser() {
+            $.ajax({
+                url: window.rootAPI + 'invitee',
+                type: 'GET',
+                success: function(res) {
+                    $(".user-container").html('<table><thead></thead><tbody></tbody></table>');
+                    $(".user-container table thead").html('<tr><th class="col-md-4">Username</th><th class="col-md-4">Name</th><th class="col-md-1">Action</th></tr>');
+                    res.map(function(invitee) {
+                        var html = '<tr class="table table-bordered">';
+                        html += '<td class="username col-md-4">' + invitee.username + '</td>';
+                        html += '<td class="name col-md-4">' + invitee.name + '</td>';
+                        html += '<td class="user-action col-md-2">' + '<button class="btn btn-info delete-user" data-id="' + invitee._id + '">Delete</button>' + '</td>';
+                        html += '</tr>';
+                        $(".user-container table tbody").append(html);
+                    });
+                    $(".delete-user").click(function() {
+                        deleteUser($(this).attr('data-id'));
+                    });
+                },
+                error: function(e) {
+
+                }
+            })
+        }
+    </script>
+</body>
+</html>

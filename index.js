@@ -12,6 +12,9 @@ var cookieParser = require('cookie-parser');
 var cors = require('cors');
 __mongodb.init();
 
+app.set('views', __dirname + '/views');
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'ejs');
 app.set('port', (process.env.PORT || 5000));
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser());
@@ -24,6 +27,15 @@ var corsOptions = {
 };
 app.use(cors(corsOptions));
 
+app.get('/client', function(req, res, next) {
+    res.render('client.html');
+});
+app.get('/server', function(req, res, next) {
+    res.render('server.html');
+});
+app.get('/user', function(req, res, next) {
+    res.render('user.html');
+});
 require('./api/routes')(app);
 
 __mongodb.connect(__config.mongo.uri, __config.mongo.options, function(err) {

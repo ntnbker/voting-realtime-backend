@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Server</title>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <script type="text/javascript" src="./js/jquery-3.2.1.min.js"></script>
+</head>
+<style>
+    body {
+        margin: auto;
+        margin-top: 20px;
+    }
+    #vote-list div {
+        height: 100px;
+        text-align: center;
+        line-height: 100px;
+        background-color: #ddd;
+        margin: 20px;
+    }
+    #round-name {
+        padding: 5px;
+    }
+    #vote-list .vote-item {
+        float: left;
+        width: 11.28vw;
+        height: 11.28vw;
+        background-color: #ddd;
+        padding: 10px;
+        box-sizing: border-box;
+        margin: 15px;
+    }
+    .active.vote-item {
+        background-color: yellow !important;
+    }
+
+</style>
+<body>
+    <div class="new-round col-md-12 text-center">
+        <input type="text" placeholder="Round name" id="round-name">
+        <button class="btn btn-info" onclick="newRound()">New Round</button>
+    </div>
+    <div id="vote-list" class="col-md-12">
+    </div>
+    <script>
+        // var cookie = document.cookie;
+        // var jCookie = {};
+        window.rootAPI = 'http://192.168.1.97:9000/';
+        getUser();
+        getVoteList();
+        // if (cookie.length > 0) {
+        //     jCookie = JSON.parse( '{' + cookie.replace('=',":") + '}');
+        //     document.getElementById('button-wrapper').style.display = 'block';
+        // }
+        function newRound() {
+            $.ajax({
+                url: window.rootAPI + 'round',
+                type: 'POST',
+                data: {
+                    name: $("#round-name").val()
+                },
+                success: function(res){
+                    window.roundTime = res.dateCreated;
+                    getVoteList();
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        function getUser() {
+            $.ajax({
+                url: window.rootAPI + 'invitee',
+                type: 'GET',
+                async: false,
+                success: function(res) {
+                    window.invitees = res;
+                },
+                error: function(e) {
+
+                }
+            });
+        }
+
+        function getVoteList() {
+            $.ajax({
+                url: window.rootAPI + 'round?time=' + window.roundTime,
+                type: 'GET',
+                success: function(res){
+                    console.log("VoteList", res.votes);
+                    window.roundTime = res.lastUpdatedTime;
+                    $("#vote-list").html('');
+                    window.invitees.map(function(invitee) {
+                        var inviteeS = res.votes.find(function(voteItem){
+                            return invitee._id == voteItem.inviteeId;
+                        });
+                        if (inviteeS) {
+                            $("#vote-list").append('<div class="active vote-item">' + invitee.name + '</div>');
+                        } else {
+                            $("#vote-list").append('<div class="vote-item">' + invitee.name + '</div>');
+                        }
+
+                    });
+                    setTimeout(getVoteList(), 300);
+                },
+                error: function(e) {
+                    setTimeout(getVoteList(), 300);
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>
