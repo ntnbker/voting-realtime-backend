@@ -24,7 +24,10 @@ var routes = [
   {
     path: '/round/vote',
     method: 'POST',
-    middlewares: [inviteeCtrl.attachInvitee, roundCtrl.voting],
+    middlewares: [function(req, res, next) {
+      req.vote = true;
+      return next();
+    }, inviteeCtrl.attachInvitee, roundCtrl.voting],
     noAuth: true
   },
   {
@@ -51,6 +54,14 @@ var routes = [
     path: '/invitee/login',
     method: 'GET',
     middlewares: [inviteeCtrl.login],
+    noAuth: true
+  },{
+    path: '/round/revoting',
+    method: 'POST',
+    middlewares: [function(req, res, next) {
+      req.vote = false;
+      return next();
+    }, roundCtrl.voting],
     noAuth: true
   },
 ]
