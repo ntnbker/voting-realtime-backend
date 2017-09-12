@@ -83,12 +83,8 @@ exports.deactive = function(req, res, next) {
       return res.status(400).send(err || 'Not Found')
     }
     async.forEach(invitees, function(item, callback) {
-      Invitee.findOneAndUpdate({
+      Invitee.deleteOne({
         _id: item._id,
-      }, {
-        $set: {
-          isActive: false,
-        }
       }, callback)
     }, function(err) {
       if (err) {

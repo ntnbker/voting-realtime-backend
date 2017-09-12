@@ -57,7 +57,7 @@
         // var cookie = document.cookie;
         // var jCookie = {};
         window.rootID = '';
-        window.rootAPI = 'http://192.168.1.97:9000/';
+        window.rootAPI = '/';
         // if (cookie.length > 0) {
         //     jCookie = JSON.parse( '{' + cookie.replace('=',":") + '}');
         //     document.getElementById('button-wrapper').style.display = 'block';
@@ -81,7 +81,7 @@
                     $(".form-username").hide();
                 },
                 error: function (e) {
-                    login();
+                    
                 }
             });
         }
@@ -91,7 +91,7 @@
                 type: 'POST',
                 data: {
                     id: window.rootID,
-                    answer: 1
+                    answer: 'voted'
                 },
                 success: function(res) {
                     console.log(res)

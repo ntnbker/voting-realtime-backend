@@ -70,7 +70,7 @@ function voting(params, callback) {
         votes: {
           name: invitee.name,
           inviteeId: invitee._id,
-          anwser: params.anwser,
+          answer: params.answer,
           votedTime: Date.now(),
         },
       },
@@ -91,7 +91,7 @@ function reVoting(id, callback) {
     }
 
     var votes = round[0].votes.map(function(vote) {
-      vote.anwser = vote.inviteeId === id ? 'voted' : 'unvoted';
+      vote.answer = vote.inviteeId === id ? 'voted' : 'unvoted';
       return vote;
     });
     Round.findOneAndUpdate({

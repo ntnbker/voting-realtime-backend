@@ -45,17 +45,22 @@
             <input type="text" placeholder="Name" id="name" class="col-md-8"/>
         </div>
 
-        <button class="btn btn-info add-user">Add User</button>
+        <button class="btn btn-info" id="add-user">Add User</button>
     </div>
     <script>
-        window.rootAPI = 'http://192.168.1.97:9000/';
+        window.rootAPI = '/';
         getUser();
         $(document).ready(function() {
-            $(".add-user").click(function () {
+            $("#add-user").click(function () {
                 addUser();
             });
         })
         function addUser() {
+        	var data = {
+                username: $('#username').val(),
+                name: $("#name").val()
+            };
+            console.log(data);
             $.ajax({
                 url: window.rootAPI + 'invitee',
                 type: 'POST',

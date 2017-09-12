@@ -10,7 +10,7 @@ var schema = new Schema({
     name: String,
     inviteeId: String,
     votedTime: Number,
-    anwser: String,
+    answer: String,
   }],
   dateCreated: Number,
   lastUpdatedTime: Number,
