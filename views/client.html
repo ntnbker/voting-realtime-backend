@@ -6,6 +6,7 @@
     <title>Client</title>
     <link rel="stylesheet" href="./css/bootstrap.min.css">
     <script type="text/javascript" src="./js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="./js/bootstrap.min.js"></script>
 </head>
 <style>
     body {
@@ -49,10 +50,35 @@
     <div class="button-wrapper">
         <div class="button-click">
             <img src="khoa-sol.jpg" />
-            <div class="btn-vote">
-            <div>
+            <div class="btn-vote" data-toggle="modal" data-target="#myModal">
+            </div>
         </div>
     </div>
+    <div class="container">
+	  <!-- Trigger the modal with a button -->	 
+
+	  <!-- Modal -->
+	  <div class="modal fade" id="myModal" role="dialog">
+	    <div class="modal-dialog">
+	    
+	      <!-- Modal content-->
+	      <div class="modal-content">
+	        <div class="modal-header">
+	          <button type="button" class="close" data-dismiss="modal">&times;</button>
+	          <h4 class="modal-title">Xác nhận vote?</h4>
+	        </div>
+	        <div class="modal-body">
+	          <p>Bạn đồng ý chọn ???</p>
+	        </div>
+	        <div class="modal-footer">
+	          <button id="voting" class="btn btn-default" data-dismiss="modal">Đồng ý</button>
+	          <button class="btn btn-default" data-dismiss="modal">Hủy</button>
+	        </div>
+	      </div>
+	      
+	    </div>
+	  </div>
+  	</div>
     <script>
         // var cookie = document.cookie;
         // var jCookie = {};
@@ -63,7 +89,7 @@
         //     document.getElementById('button-wrapper').style.display = 'block';
         // }
         $(document).ready(function() {
-            $(".button-click").click(function() {
+            $("#voting").click(function() {
                 voting();
             });
             $("#login").bind('click', function() {
