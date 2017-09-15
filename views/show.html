@@ -10,17 +10,22 @@
 <style>
     body {
         margin: auto;
-        margin-top: 20px;
-    }
-    #vote-list div {
-        height: 100px;
-        text-align: center;
-        line-height: 100px;
-        background-color: #ddd;
-        margin: 20px;
+        background-image: url('./image/background.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
+
+    }
+    #vote-list {
+    	display: flex;
+	    align-items: center;
+	    justify-content: center;
     }
     #round-name {
         padding: 5px;
@@ -29,15 +34,22 @@
         float: left;
         width: 11.28vw;
         height: 11.28vw;
-        background-color: #ddd;
-
+        background-color: transparent;
         box-sizing: border-box;
-        margin: 0;
-        background-image: url('./image/khoa-sol.jpg');
+        margin: 10px;
         background-repeat: no-repeat;
         background-size: contain;
         background-position: center;
         cursor: pointer;
+        position: relative;
+    }
+    .vote-name{
+    	position: absolute;
+	    bottom: 0;
+	    text-align: center;
+	    left: 0;
+	    right: 0;
+	    color: #fff;
     }
     .active.vote-item:nth-child(1) {
         background-image: url('./image/1.jpg') !important;
@@ -64,42 +76,20 @@
 
 
 </style>
-<body>
-    <div class="new-round col-md-12 text-center">
-
-    </div>
+<body>    
     <div id="vote-list" class="col-md-12">
     </div>
     <script>
         // var cookie = document.cookie;
         // var jCookie = {};
-        window.rootAPI = 'http://192.168.1.97:9000/';
+        window.rootAPI = '/';
+        window.revoting = false;
         getUser();
         getVoteList();
         // if (cookie.length > 0) {
         //     jCookie = JSON.parse( '{' + cookie.replace('=',":") + '}');
         //     document.getElementById('button-wrapper').style.display = 'block';
         // }
-        function newRound() {
-            $.ajax({
-                url: window.rootAPI + 'round',
-                type: 'POST',
-                data: {
-                    name: $("#round-name").val()
-                },
-                success: function(res){
-                    window.roundTime = res.lastUpdatedTime;
-                    getVoteList();
-                    setTimeout(function() {
-                        window.location.href = "/show";
-                    }, 300);
-                },
-                error: function(e) {
-                    console.log(e);
-                }
-            });
-        }
-
         function getUser() {
             $.ajax({
                 url: window.rootAPI + 'invitee',
@@ -113,11 +103,47 @@
                 }
             });
         }
-
         function getVoteList() {
             $.ajax({
-                url: window.rootAPI + 'round?time=' + window.roundTime,
+                url: window.rootAPI + 'round',
                 type: 'GET',
+                success: function(res){
+                    window.roundTime = res.lastUpdatedTime;
+                    $("#vote-list").html('');
+                    window.invitees.map(function(invitee) {
+                        var inviteeS = res.votes.find(function(voteItem){
+                            return invitee._id == voteItem.inviteeId;
+                        });
+                        if (inviteeS && inviteeS.answer === "voted") {
+                            $("#vote-list").append('<div class="active vote-item" data-id="' + inviteeS.inviteeId + '"> '  + '<p class="vote-name">' + inviteeS.name + '</p>' +  '</div>');
+                        } else {
+                            $("#vote-list").append('<div class="vote-item">'+'</div>');
+                        }
+
+                    });
+                    $(".active").click(function(){
+                        var id = $(this).attr('data-id');
+                        revotingFunc(id);
+                        window.revoting = true;
+                    });
+                    if (window.revoting == false) {
+                    	getVoteList();
+                    }
+                },
+                error: function(e) {
+                    setTimeout(getVoteList(), 100);
+                }
+            });
+        }
+
+        function revotingFunc(id) {
+        	$.ajax({
+                url: window.rootAPI + 'round/revoting',
+
+                type: 'POST',
+                data: {
+                	id: id
+                },
                 success: function(res){
                     console.log("VoteList", res.votes);
                     window.roundTime = res.lastUpdatedTime;
@@ -126,24 +152,19 @@
                         var inviteeS = res.votes.find(function(voteItem){
                             return invitee._id == voteItem.inviteeId;
                         });
-                        if (inviteeS) {
-                            $("#vote-list").append('<div class="active vote-item">'+ '</div>');
+                        if (inviteeS && inviteeS.answer === "voted") {
+                            $("#vote-list").append('<div class="active vote-item" data-id="' + inviteeS.inviteeId + '"> '  + '<p class="vote-name">' + inviteeS.name + '</p>' +  '</div>');
                         } else {
-                            $("#vote-list").append('<div class="vote-item">' + '</div>');
+                            $("#vote-list").append('<div class="vote-item">'+'</div>');
                         }
 
                     });
-                    $(".active").click(function(){
-                        $(this).parent().children('.vote-item').removeClass('active');
-                        $(this).addClass('active');
-                    });
-                    setTimeout(getVoteList(), 300);
                 },
                 error: function(e) {
-                    setTimeout(getVoteList(), 300);
+                    
                 }
             });
-        }
+        }        
 
     </script>
 </body>
